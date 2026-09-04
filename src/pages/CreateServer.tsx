@@ -21,18 +21,20 @@ import {
   Network,
   Wrench,
   Feather,
-  CheckCircle2
+  CheckCircle2,
+  Smartphone
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import SearchableDropdown from "../components/SearchableDropdown";
 
 export default function CreateServer() {
   const SOFTWARE_TYPES = [
-    { id: "PAPER", name: "Paper", desc: "Performance Vanilla", icon: Zap, color: "text-amber-400", bg: "bg-amber-400/10", border: "border-amber-400/20", activeRing: "ring-amber-500/50", glow: "to-amber-500/10" },
-    { id: "VELOCITY", name: "Velocity", desc: "Next-gen Proxy", icon: FastForward, color: "text-cyan-400", bg: "bg-cyan-400/10", border: "border-cyan-400/20", activeRing: "ring-cyan-500/50", glow: "to-cyan-500/10" },
-    { id: "BUNGEECORD", name: "BungeeCord", desc: "Classic Proxy", icon: Network, color: "text-orange-400", bg: "bg-orange-400/10", border: "border-orange-400/20", activeRing: "ring-orange-500/50", glow: "to-orange-500/10" },
-    { id: "FORGE", name: "Forge", desc: "Modded Minecraft", icon: Wrench, color: "text-stone-400", bg: "bg-stone-400/10", border: "border-stone-400/20", activeRing: "ring-stone-500/50", glow: "to-stone-500/10" },
-    { id: "FABRIC", name: "Fabric", desc: "Lightweight Mods", icon: Feather, color: "text-amber-200", bg: "bg-amber-200/10", border: "border-amber-200/20", activeRing: "ring-amber-300/50", glow: "to-amber-300/10" },
+    { id: "PAPER", name: "Paper", desc: "Performance Vanilla", icon: Zap, color: "text-amber-400", bg: "bg-amber-400/10", border: "border-amber-400/20", activeRing: "ring-amber-500/50", glow: "to-amber-500/10", defaultPort: "25565" },
+    { id: "POCKETMINE_MP", name: "PocketMine-MP", desc: "Bedrock Edition", icon: Smartphone, color: "text-emerald-400", bg: "bg-emerald-400/10", border: "border-emerald-400/20", activeRing: "ring-emerald-500/50", glow: "to-emerald-500/10", defaultPort: "19132" },
+    { id: "VELOCITY", name: "Velocity", desc: "Next-gen Proxy", icon: FastForward, color: "text-cyan-400", bg: "bg-cyan-400/10", border: "border-cyan-400/20", activeRing: "ring-cyan-500/50", glow: "to-cyan-500/10", defaultPort: "25565" },
+    { id: "BUNGEECORD", name: "BungeeCord", desc: "Classic Proxy", icon: Network, color: "text-orange-400", bg: "bg-orange-400/10", border: "border-orange-400/20", activeRing: "ring-orange-500/50", glow: "to-orange-500/10", defaultPort: "25565" },
+    { id: "FORGE", name: "Forge", desc: "Modded Minecraft", icon: Wrench, color: "text-stone-400", bg: "bg-stone-400/10", border: "border-stone-400/20", activeRing: "ring-stone-500/50", glow: "to-stone-500/10", defaultPort: "25565" },
+    { id: "FABRIC", name: "Fabric", desc: "Lightweight Mods", icon: Feather, color: "text-amber-200", bg: "bg-amber-200/10", border: "border-amber-200/20", activeRing: "ring-amber-300/50", glow: "to-amber-300/10", defaultPort: "25565" },
   ];
 
   const [name, setName] = useState("");
@@ -71,6 +73,14 @@ export default function CreateServer() {
     else if (val <= 48) autoCpu = 600;
     else if (val <= 64) autoCpu = 800;
     setCpu(autoCpu.toString());
+  };
+
+  const handleSoftwareChange = (selectedId: string) => {
+    setType(selectedId);
+    const selectedSoftware = SOFTWARE_TYPES.find((s) => s.id === selectedId);
+    if (selectedSoftware) {
+      setPort(selectedSoftware.defaultPort);
+    }
   };
 
   useEffect(() => {
@@ -156,8 +166,7 @@ export default function CreateServer() {
       setLoading(false);
     }
   };
-
-  return (
+    return (
     <motion.div 
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
@@ -326,7 +335,7 @@ export default function CreateServer() {
             <label className="block text-sm font-medium text-foreground-muted mb-3 flex items-center">
               <Box className="w-4 h-4 mr-2 text-indigo-400" /> Server Software
             </label>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {SOFTWARE_TYPES.map((soft) => {
                 const isSelected = type === soft.id;
                 const Icon = soft.icon;
@@ -334,7 +343,7 @@ export default function CreateServer() {
                   <button
                     key={soft.id}
                     type="button"
-                    onClick={() => setType(soft.id)}
+                    onClick={() => handleSoftwareChange(soft.id)}
                     className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all duration-200 relative overflow-hidden group ${
                       isSelected 
                         ? `${soft.bg} ${soft.border} ring-1 ${soft.activeRing} shadow-lg` 
@@ -448,4 +457,4 @@ export default function CreateServer() {
       {(loading) && <LoadingOverlay message="Provisioning server resources..." progress={createProgress} />}
     </motion.div>
   );
-}
+              }
